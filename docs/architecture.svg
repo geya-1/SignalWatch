@@ -1,0 +1,66 @@
+<svg viewBox="0 0 900 760" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#374151"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="900" height="760" fill="#F7F9F8"/>
+  <text x="450" y="36" text-anchor="middle" font-size="22" font-weight="700" fill="#111827">SignalWatch — System Architecture</text>
+
+  <!-- Frontend -->
+  <rect x="300" y="65" width="300" height="70" rx="14" fill="#00875A"/>
+  <text x="450" y="95" text-anchor="middle" font-size="15" fill="#FFFFFF" font-weight="600">Next.js Frontend</text>
+  <text x="450" y="116" text-anchor="middle" font-size="12" fill="#E8F5EF">Home · Add Stock · Stock Detail (Vercel)</text>
+
+  <line x1="450" y1="135" x2="450" y2="175" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="470" y="160" font-size="11" fill="#6B7280">REST / JSON</text>
+
+  <!-- API layer -->
+  <rect x="280" y="178" width="340" height="70" rx="14" fill="#111827"/>
+  <text x="450" y="208" text-anchor="middle" font-size="15" fill="#FFFFFF" font-weight="600">FastAPI</text>
+  <text x="450" y="229" text-anchor="middle" font-size="12" fill="#D1D5DB">Routers: watchlist · market · changes · snapshot (Render)</text>
+
+  <line x1="450" y1="248" x2="450" y2="288" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Services row -->
+  <rect x="70" y="290" width="230" height="90" rx="14" fill="#FFFFFF" stroke="#00875A" stroke-width="2"/>
+  <text x="185" y="320" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">Watchlist Service</text>
+  <text x="185" y="340" text-anchor="middle" font-size="11" fill="#6B7280">CRUD, duplicate checks,</text>
+  <text x="185" y="356" text-anchor="middle" font-size="11" fill="#6B7280">orchestrates snapshot + scoring</text>
+
+  <rect x="335" y="290" width="230" height="90" rx="14" fill="#FFFFFF" stroke="#00875A" stroke-width="2"/>
+  <text x="450" y="320" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">Change Engine</text>
+  <text x="450" y="340" text-anchor="middle" font-size="11" fill="#6B7280">Deterministic scoring rules</text>
+  <text x="450" y="356" text-anchor="middle" font-size="11" fill="#6B7280">(no LLM) + explanations</text>
+
+  <rect x="600" y="290" width="230" height="90" rx="14" fill="#FFFFFF" stroke="#00875A" stroke-width="2"/>
+  <text x="715" y="320" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">Market Adapter</text>
+  <text x="715" y="340" text-anchor="middle" font-size="11" fill="#6B7280">yfinance wrapper, TTL cache,</text>
+  <text x="715" y="356" text-anchor="middle" font-size="11" fill="#6B7280">graceful failure handling</text>
+
+  <line x1="185" y1="380" x2="185" y2="420" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="450" y1="380" x2="450" y2="420" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="715" y1="380" x2="715" y2="420" stroke="#9CA3AF" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arrow)"/>
+  <text x="740" y="405" font-size="11" fill="#6B7280">External API</text>
+
+  <!-- External market data -->
+  <rect x="605" y="422" width="220" height="55" rx="12" fill="#F3F4F6" stroke="#9CA3AF" stroke-dasharray="4 4"/>
+  <text x="715" y="454" text-anchor="middle" font-size="12" fill="#374151">Yahoo Finance (yfinance)</text>
+
+  <!-- Database -->
+  <rect x="130" y="420" width="440" height="90" rx="14" fill="#00875A"/>
+  <text x="350" y="452" text-anchor="middle" font-size="15" font-weight="600" fill="#FFFFFF">PostgreSQL (Supabase-compatible)</text>
+  <text x="350" y="473" text-anchor="middle" font-size="11" fill="#E8F5EF">users · watchlist · snapshots · change_events</text>
+  <text x="350" y="490" text-anchor="middle" font-size="11" fill="#E8F5EF">Indexed on (symbol, timestamp) and (symbol, created_at)</text>
+
+  <!-- Scaling notes box -->
+  <rect x="70" y="545" width="760" height="180" rx="14" fill="#FFFFFF" stroke="#E5E7EB"/>
+  <text x="450" y="572" text-anchor="middle" font-size="14" font-weight="700" fill="#111827">Future scaling path (see README)</text>
+  <text x="95" y="600" font-size="12" fill="#374151">1. Batch market requests — fetch all watchlist symbols for all users in one grouped call instead of per-symbol.</text>
+  <text x="95" y="622" font-size="12" fill="#374151">2. Redis cache in front of the Market Adapter — replaces the in-process TTL cache once running multiple API instances.</text>
+  <text x="95" y="644" font-size="12" fill="#374151">3. Background worker (cron/queue) takes snapshots on a schedule instead of on-request, decoupling latency from freshness.</text>
+  <text x="95" y="666" font-size="12" fill="#374151">4. Precomputed change events — worker recomputes scores after each scheduled snapshot; API only ever reads.</text>
+  <text x="95" y="688" font-size="12" fill="#374151">5. Horizontal scaling — FastAPI is stateless; add instances behind a load balancer once Redis/Postgres are shared state.</text>
+  <text x="95" y="710" font-size="12" fill="#374151">6. DB indexing already in place on the hot query paths (symbol+timestamp, symbol+created_at) to keep reads fast as data grows.</text>
+</svg>
